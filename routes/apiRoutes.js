@@ -1,4 +1,8 @@
-const dbData = require("../db/db.json");
+let dbData = require("../db/db.json");
+
+const fs = require("fs");
+const util = require("util");
+const writeFIleAsync = util.promisify(fs.writeFile);
 
 module.exports = function(app) {
 
@@ -8,20 +12,42 @@ module.exports = function(app) {
 
   app.post("/api/notes", function(req, res) {
 
-    if (dbData.length < 5) {
-      dbData.push(req.body);
-      res.json(true);
-    }
-    else {
-      waitListData.push(req.body);
-      res.json(false);
-    }
+    var newNote =req.body;
+
+    var lastId = dbData[dbData.length -1]["id"];
+    var newId = lastId + 1;
+    newNote["id"] = newId;
+
+    console.log("Req.body:", req.body);
+    dbData.push(newNote);
+
+    writeFIleAsync("./db/db.json", JSON.stringify(dbData)).then(function(){
+      console.log("db.json updated");
+    });
+
+    res.json(newNote);
+
   });
 
   app.delete("/api/notes/:id", function(req, res) {
 
-    dbData.length = 0;
+    console.log("Req.params:", req.params);
+    let chosenId = parseInt(req.params.id);
+    console.log(chosenId);
 
-    res.json({ ok: true });
+    for (let i = 0; i < dbData.length; i++) {
+      if (chosenId === dbData[i].id) {
+          // delete noteContents[i];
+          dbData.splice(i,1);
+          
+          let noteJSON = JSON.stringify(dbData, null, 2);
+
+          writeFileAsync("./db/db.json", noteJSON).then(function() {
+          console.log ("Chosen note has been deleted!");
+      });                 
+      }
+  }
+  res.json(dbData);
+
   });
 };
