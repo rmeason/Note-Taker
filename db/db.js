@@ -1,5 +1,5 @@
 
-var noteContents = [
+var dbData = [
     {
     "title":"Test Title 1",
     "text":"Test text",
@@ -13,4 +13,4 @@ var noteContents = [
     
 ];
 
-module.exports = noteContents;
+module.exports = dbData;

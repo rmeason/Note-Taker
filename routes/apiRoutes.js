@@ -1,4 +1,4 @@
-let dbData = require("../db/db.json");
+let dbData = require("../db/db");
 
 const fs = require("fs");
 const util = require("util");
